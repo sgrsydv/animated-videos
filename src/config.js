@@ -27,6 +27,7 @@ export const THUMBNAIL_WIDTH = 1280;
 export const THUMBNAIL_HEIGHT = 720;
 export const YT_CATEGORY_ID = '27';
 export const YT_PRIVACY = 'public';
+export const YT_CHANNEL_ID = process.env.YT_CHANNEL_ID ?? '';
 
 export const OUTPUT_ROOT = path.join(ROOT, 'output');
 export const JOBS_ROOT = path.join(OUTPUT_ROOT, 'jobs');

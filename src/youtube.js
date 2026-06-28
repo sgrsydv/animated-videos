@@ -115,6 +115,19 @@ export async function getAuthClient() {
   return oauth2Client;
 }
 
+export async function getAuthenticatedChannel(auth) {
+  const youtube = google.youtube({ version: 'v3', auth });
+  const response = await youtube.channels.list({ part: ['snippet'], mine: true });
+  const channel = response.data.items?.[0];
+  if (!channel) {
+    throw new Error(
+      'No channel found for the authenticated account. ' +
+        'You may have authorized an account without a YouTube channel.'
+    );
+  }
+  return { id: channel.id, title: channel.snippet?.title ?? '(unknown)' };
+}
+
 export async function uploadVideo(auth, { videoPath, title, description, tags, categoryId, privacyStatus }) {
   const youtube = google.youtube({ version: 'v3', auth });
 

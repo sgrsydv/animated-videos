@@ -1,26 +1,36 @@
 import fs from 'fs';
 import { resumeJob } from './src/job.js';
 import { readManifest, writeManifest } from './src/manifest.js';
-import { getAuthClient, uploadVideo, setThumbnail } from './src/youtube.js';
+import { YT_TOKEN, YT_CHANNEL_ID } from './src/config.js';
+import { getAuthClient, getAuthenticatedChannel, uploadVideo, setThumbnail } from './src/youtube.js';
 
 function printUsage() {
-  console.log('Usage: node upload.js <jobId>');
-  console.log('Example: node upload.js 20260628-153951-why-nature-never-built-a-dragon-2271');
+  console.log('Usage: node upload.js <jobId> [--force] [--reauth]');
+  console.log('  --force    Re-upload even if this job was already uploaded');
+  console.log('  --reauth   Forget the cached YouTube login so you can pick a different channel');
+  console.log('Example: node upload.js 20260628-153951-why-nature-never-built-a-dragon-2271 --force --reauth');
 }
 
-function parseJobId() {
-  const jobId = process.argv[2];
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const flags = new Set(args.filter((a) => a.startsWith('--')));
+  const jobId = args.find((a) => !a.startsWith('--'));
   if (!jobId) {
     printUsage();
     process.exit(1);
   }
-  return jobId;
+  return { jobId, force: flags.has('--force'), reauth: flags.has('--reauth') };
 }
 
 async function run() {
-  const jobId = parseJobId();
+  const { jobId, force, reauth } = parseArgs();
   const job = resumeJob(jobId);
   const { paths } = job;
+
+  if (reauth && fs.existsSync(YT_TOKEN)) {
+    fs.rmSync(YT_TOKEN);
+    console.log('[youtube] Cleared cached login. You will re-authorize and can pick a channel.');
+  }
 
   if (!fs.existsSync(paths.final)) {
     throw new Error(`final.mp4 not found. Run the video pipeline first for job ${jobId}.`);
@@ -43,10 +53,15 @@ async function run() {
     throw new Error('manifest.json not found for this job.');
   }
 
-  if (manifest.youtube?.videoId) {
+  if (manifest.youtube?.videoId && !force) {
     const url = manifest.youtube.url ?? `https://youtu.be/${manifest.youtube.videoId}`;
-    console.log(`\nVideo already uploaded: ${url}\n`);
+    console.log(`\nVideo already uploaded: ${url}`);
+    console.log('Use --force to upload again (e.g. after deleting it on YouTube).\n');
     return;
+  }
+
+  if (manifest.youtube?.videoId && force) {
+    console.log(`[upload] --force set; re-uploading (previous video: ${manifest.youtube.videoId}).`);
   }
 
   const metadata = JSON.parse(fs.readFileSync(paths.metadata, 'utf8'));
@@ -57,6 +72,23 @@ async function run() {
   console.log(`  Thumbnail: ${paths.thumbnail}\n`);
 
   const auth = await getAuthClient();
+
+  const channel = await getAuthenticatedChannel(auth);
+  console.log(`\n[youtube] Authenticated channel: "${channel.title}" (${channel.id})`);
+
+  if (YT_CHANNEL_ID) {
+    if (channel.id !== YT_CHANNEL_ID) {
+      throw new Error(
+        `Channel mismatch. Authenticated as "${channel.title}" (${channel.id}), ` +
+          `but YT_CHANNEL_ID expects ${YT_CHANNEL_ID}.\n` +
+          'Nothing was uploaded. Re-run with --reauth to pick the correct channel:\n' +
+          `  node upload.js ${jobId} --reauth${force ? ' --force' : ''}`
+      );
+    }
+    console.log(`  Verified against YT_CHANNEL_ID. Proceeding.\n`);
+  } else {
+    console.log('  If this is the wrong channel, delete youtube-token.json and re-run to re-authorize.\n');
+  }
 
   const videoId = await uploadVideo(auth, {
     videoPath: paths.final,
@@ -76,6 +108,8 @@ async function run() {
     ...metadata,
     videoId,
     url,
+    channelId: channel.id,
+    channelTitle: channel.title,
     uploadedAt: new Date().toISOString(),
   };
   writeManifest(paths, manifest);
