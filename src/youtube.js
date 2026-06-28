@@ -128,23 +128,38 @@ export async function getAuthenticatedChannel(auth) {
   return { id: channel.id, title: channel.snippet?.title ?? '(unknown)' };
 }
 
-export async function uploadVideo(auth, { videoPath, title, description, tags, categoryId, privacyStatus }) {
+export async function uploadVideo(auth, {
+  videoPath,
+  title,
+  description,
+  tags,
+  categoryId,
+  privacyStatus,
+  defaultLanguage,
+  defaultAudioLanguage,
+  recordingDate,
+}) {
   const youtube = google.youtube({ version: 'v3', auth });
 
   console.log('[youtube] Uploading video (resumable)...');
 
   const response = await youtube.videos.insert({
-    part: ['snippet', 'status'],
+    part: ['snippet', 'status', 'recordingDetails'],
     requestBody: {
       snippet: {
         title,
         description,
         tags,
         categoryId,
+        defaultLanguage,
+        defaultAudioLanguage,
       },
       status: {
         privacyStatus,
         selfDeclaredMadeForKids: false,
+      },
+      recordingDetails: {
+        recordingDate,
       },
     },
     media: {

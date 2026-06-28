@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { resumeJob } from './src/job.js';
 import { readManifest, writeManifest } from './src/manifest.js';
-import { YT_TOKEN, YT_CHANNEL_ID } from './src/config.js';
+import { YT_TOKEN, YT_CHANNEL_ID, YT_DEFAULT_LANGUAGE } from './src/config.js';
 import { getAuthClient, getAuthenticatedChannel, uploadVideo, setThumbnail } from './src/youtube.js';
 
 function printUsage() {
@@ -90,6 +90,11 @@ async function run() {
     console.log('  If this is the wrong channel, delete youtube-token.json and re-run to re-authorize.\n');
   }
 
+  const now = new Date();
+  const recordingDate = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0)
+  ).toISOString();
+
   const videoId = await uploadVideo(auth, {
     videoPath: paths.final,
     title: metadata.title,
@@ -97,6 +102,9 @@ async function run() {
     tags: metadata.tags,
     categoryId: metadata.categoryId,
     privacyStatus: metadata.privacyStatus,
+    defaultLanguage: YT_DEFAULT_LANGUAGE,
+    defaultAudioLanguage: YT_DEFAULT_LANGUAGE,
+    recordingDate,
   });
 
   await setThumbnail(auth, videoId, paths.thumbnail);

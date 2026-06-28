@@ -18,7 +18,7 @@ Leave generous whitespace on all four sides of every frame.
 Each frame should be visually isolated so it can be cropped into an individual image without accidentally cutting neighboring drawings.
 Nothing from one frame should touch, overlap, or bleed into another frame.
 Think of the page as nine independent drawings floating on a single continuous white canvas rather than nine boxed panels.
-The final image must look like a blank white page with nine small drawings placed on it, with absolutely no lines dividing them.
+The page background (the gaps separating the nine frames) must ALWAYS stay pure white. Some individual frames may have their own colorful background fill (see Backgrounds section), but that color must stay INSIDE that frame with a clear white margin around it, and must never spread into the gaps between frames.
 Highest Priority
 
 The storyboard must NOT look repetitive.
@@ -167,7 +167,7 @@ It should not look like polished artwork pretending to be simple.
 
 Requirements:
 
-white background
+mostly white backgrounds, but some frames have a crude colorful background (see Backgrounds section)
 thick uneven black outlines
 shaky hand-drawn lines
 crooked circles
@@ -205,13 +205,31 @@ rectangles
 triangles
 squares
 straight lines
+Backgrounds
+
+Most frames keep a plain white background.
+But SOME frames (when the cell prompt asks for it) should have a COLORFUL background.
+When a frame is colorful, it must look like an absolute beginner sloppily filled it in with MS Paint:
+- messy, uneven flat color
+- visible scribbly brush strokes and streaks
+- patchy paint-bucket fills that miss spots and leak slightly past the lines
+- crayon-like, amateur, NOT smooth, NOT blended, NOT gradient
+Keep each colored fill inside its own frame with a white margin around it.
+
+Scale and Size (IMPORTANT)
+
+Strongly vary the scale of the subject from frame to frame.
+Several frames should feature a GIANT subject or object that dominates or nearly fills the entire frame (extreme close-up energy), e.g. one huge eye, a massive object, an enormous creature that runs off the edges of the frame.
+Other frames should be wide and distant with a tiny subject surrounded by space.
+Never use the same subject size in two neighboring frames.
+
 Composition
 
 Every frame should have different balance.
 
 Mix:
 
-giant object
+giant object filling the whole frame
 tiny humans
 empty environment
 object only
@@ -225,7 +243,7 @@ distant shot
 
 Avoid centering everything.
 
-Use lots of negative space.
+Use lots of negative space (except in frames that intentionally have a giant subject or a colorful filled background).
 
 Final Output Requirements
 One 16:9 image

@@ -32,14 +32,19 @@ export async function generateMetadata(paths) {
     messages: [
       {
         role: 'system',
-        content: `You write YouTube metadata for educational curiosity-driven videos.
+        content: `You write high-performing, CLICKBAIT YouTube metadata for educational curiosity-driven videos.
 Match the tone and style of this reference script:
 
 ${scriptStyle}
 
 Return JSON with:
-- "title": punchy, curiosity-driven YouTube title (max 100 characters). Make viewers want to click.
-- "description": 2-4 short paragraphs describing the video. End with a soft call-to-action (subscribe, comment). Include relevant keywords naturally. No markdown headers.
+- "title": an irresistible, clickbait YouTube title (STRICTLY max 100 characters, aim for 40-70). It MUST make people unable to NOT click. Use proven clickbait techniques:
+    * Open a curiosity gap or tease a secret/surprise ("The REAL Reason...", "What Nobody Tells You About...", "...And Nobody Noticed").
+    * Make a bold, surprising, or contrarian claim, or pose a burning question the video answers.
+    * Use powerful emotional/curiosity words (Shocking, Insane, Impossible, Hidden, Secret, Never, Why, How) where natural.
+    * Consider strategic CAPS on 1-2 key words and/or a number for punch. Do NOT use spammy ALL-CAPS, clickbait that lies, or excessive emojis/symbols.
+    * Be punchy and front-load the hook. The title must stay truthful to the script — irresistible, never misleading.
+- "description": 2-4 short paragraphs describing the video. Hook the reader in the first line. End with a soft call-to-action (subscribe, comment). Include relevant keywords naturally. No markdown headers.
 - "tags": array of 8-15 relevant search tags (strings only).`,
       },
       {
